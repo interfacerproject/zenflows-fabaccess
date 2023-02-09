@@ -1,0 +1,6 @@
+[submodule "pyfabapi"]
+	path = pyfabapi
+	url = https://gitlab.com/fabinfra/fabaccess/pyfabapi.git
+[submodule "zenflows-crypto"]
+	path = zenflows-crypto
+	url = git@github.com:interfacerproject/zenflows-crypto.git
