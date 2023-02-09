@@ -4,7 +4,7 @@ import pyfabapi.fabapi.user_system
 
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from zenroom import zencode_exec
@@ -17,10 +17,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    fab_host: string
+    fab_host: str
     fab_port: int
-    fab_user: string
-    fab_pass: string
+    fab_user: str
+    fab_pass: str
 
     def __init__(self):
         self.fab_host = os.getenv("FAB_HOST")
@@ -66,7 +66,7 @@ async def new_session(cmd: NewSession):
 
     return {"token": "todo"}
 
-@app.get("/command")
+@app.post("/command")
 async def read_root(cmd: Command):
     zen_result = zencode_exec(zen_verify_cmd, keys=cmd.json())
 
@@ -79,15 +79,24 @@ async def read_root(cmd: Command):
         raise HTTPException(status_code=500, detail="Invalid signature")
 
 
-    # a service "urn:fabaccess:resource:Another"
-
     session = await fabapi.connect(conf.fab_host, conf.fab_port, conf.fab_user, conf.fab_pass)
+    if session == None:
+        raise HTTPException(status_code=500, detail="Fabaccess not available")
     info = session.machineSystem.info
     ma = await info.getMachineURN(cmd.service).a_wait()
 
-    if ma.just:
-        print(ma)
-        print(ma.just)
-        await ma.just.use.use().a_wait()
-    else:
-        raise HTTPException(status_code=500, detail="No such resource")
+    try:
+        if ma.just:
+            if cmd.command == "ON":
+                await ma.just.use.use().a_wait()
+            elif cmd.command == "OFF":
+                await ma.just.inuse.giveBack().a_wait()
+            else:
+                raise HTTPException(status_code=500, detail="Fabaccess not available")
+        else:
+            raise HTTPException(status_code=500, detail="No such resource")
+    except:
+        raise HTTPException(status_code=500, detail="Could not complete command")
+
+
+    return {"success": True}
