@@ -1,8 +1,0 @@
-{
-  "command": "ON",
-  "eddsa_public_key": "BmW1a6x43P4Rae9B4hS67PhHTCUShXAGy4K8tQtUfa8L",
-  "eddsa_signature": "GJxBHa1wtb2WhnwPZjs4tCTavy7tQAA7py46xMtTfDtuqwUhMHdzmfqoKCbMzUHJvbcRxkcJD7Zz1qP3d6AETMc",
-  "service": "urn:fabaccess:resource:Another",
-  "timestamp": "1675964281",
-  "token": "todo"
-}
