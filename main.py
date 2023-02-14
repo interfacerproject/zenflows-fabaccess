@@ -48,11 +48,12 @@ class Command(BaseModel):
     eddsa_public_key: str
     eddsa_signature: str
 
+# TODO: keep the same session across multiple calls
 app = FastAPI()
 conf = Config()
 
 @app.post("/command")
-async def read_root(cmd: Command):
+async def command(cmd: Command):
     # Verify DID exits on DID controller
 
     did_request = requests.get(f"{conf.did_url}{cmd.eddsa_public_key}")
@@ -105,3 +106,13 @@ async def read_root(cmd: Command):
 
 
     return {"success": True}
+
+@app.get("/state/{urn}")
+async def state(urn: str):
+    session = await fabapi.connect(conf.fab_host, conf.fab_port, conf.fab_user, conf.fab_pass)
+    if session == None:
+        raise HTTPException(status_code=500, detail="Fabaccess not available")
+    info = session.machineSystem.info
+    ma = await info.getMachineURN(cmd.service).a_wait()
+
+    return {"state": ma.state}
