@@ -89,6 +89,7 @@ async def command(cmd: Command):
     if session == None:
         raise HTTPException(status_code=500, detail="Fabaccess not available")
     info = session.machineSystem.info
+    print(cmd.service)
     ma = await info.getMachineURN(cmd.service).a_wait()
 
     try:
@@ -113,6 +114,10 @@ async def state(urn: str):
     if session == None:
         raise HTTPException(status_code=500, detail="Fabaccess not available")
     info = session.machineSystem.info
-    ma = await info.getMachineURN(cmd.service).a_wait()
+    print(urn)
+    ma = await info.getMachineURN(urn).a_wait()
 
-    return {"state": ma.state}
+    if ma.just:
+        return {"state": str(ma.just.state)}
+    else:
+        raise HTTPException(status_code=500, detail="Fabaccess not available")
