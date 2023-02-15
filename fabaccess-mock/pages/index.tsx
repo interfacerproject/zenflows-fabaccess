@@ -23,6 +23,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <h1>Activate machine via Fabaccess using w3c-did</h1>
         <button
           className={styles.button}
           onClick={async () => {
